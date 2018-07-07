@@ -13,8 +13,8 @@ namespace WiFi_Disabler
 
     public partial class WiFiDisablerService : ServiceBase
     {
-        const int NETWORK_DISCONNECT = 27;
-        const int NETWORK_CONNECT = 32;
+        const long NETWORK_DISCONNECT = 27;
+        const long NETWORK_CONNECT = 32;
 
         EventLog systemLog;
         EntryWrittenEventHandler handler;
@@ -35,15 +35,17 @@ namespace WiFi_Disabler
 
         private void NetworkEventListener(object sender, EntryWrittenEventArgs e)
         {
-            Int32 eventId = (Int32)(e.Entry.InstanceId & 0xFFFF);
+            long eventId = (e.Entry.InstanceId & 0xFFFF);
             switch (eventId)
             {
                 case NETWORK_DISCONNECT:
-
+                    handleNetworkDisconnection(e);
                     break;
+
                 case NETWORK_CONNECT:
-
+                    handleNetworkConnection(e);
                     break;
+
                 default:
 
                     break;
@@ -55,6 +57,16 @@ namespace WiFi_Disabler
             systemLog.EntryWritten -= handler;
             systemLog.Dispose();
             systemLog = null;  
+        }
+
+        public void handleNetworkDisconnection(EntryWrittenEventArgs e)
+        {
+            // Check other interfaces for status and enable wifi if "all" devices are disconnected
+        }
+
+        public void handleNetworkConnection(EntryWrittenEventArgs e)
+        {
+            // Disable WiFi if it is enabled.
         }
     }
 }
